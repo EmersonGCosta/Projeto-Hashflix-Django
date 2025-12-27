@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+from multiprocessing.managers import Token
 from pathlib import Path
+import os
 
 from django.conf.global_settings import STATICFILES_DIRS, AUTH_USER_MODEL
 
@@ -22,12 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3%8!+4#@zb1op5uc61(i1dqm=!-3v!ylc43wtnl&pf7rc_v#v#'
+TOKEN_CSRF= os.getenv('TOKEN_CSRF')
+if TOKEN_CSRF:
+    SECRET_KEY = TOKEN_CSRF
+    CSRF_TRUSTED_ORIGINS = ['https://projeto-hashflix-django-production.up.railway.app/']
+else:
+    SECRET_KEY = 'django-insecure-3%8!+4#@zb1op5uc61(i1dqm=!-3v!ylc43wtnl&pf7rc_v#v#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['https://projeto-hashflix-django-production.up.railway.app/', 'localhost', '127.0.0.1']
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+]
 
 
 # Application definition
@@ -90,7 +100,7 @@ DATABASES = {
     }
 }
 import dj_database_url
-import os
+
 DATABASE_URL =os.getenv('DATABASE_URL')
 if DATABASE_URL:
     DATABASES = {'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=1800)}
